@@ -5,7 +5,7 @@ import { Current } from '../current'
 import { document } from '../bom/document'
 import { TaroRootElement } from '../dom/root'
 import { MpInstance } from '../hydrate'
-import { Instance, PageInstance, PageProps } from './instance'
+import { Instance, PageInstance, PageProps, PageLifeCycle } from './instance'
 import { incrementId } from '../utils'
 import { perf } from '../perf'
 import { PAGE_INIT } from '../constants'
@@ -82,16 +82,8 @@ export function getPath (id: string, options?: Record<string, unknown>): string 
   return path
 }
 
-export function getOnReadyEventKey (path: string) {
-  return path + '.' + 'onReady'
-}
-
-export function getOnShowEventKey (path: string) {
-  return path + '.' + 'onShow'
-}
-
-export function getOnHideEventKey (path: string) {
-  return path + '.' + 'onHide'
+export function getLifecyleEventKey (id: string, lifecycle: keyof PageLifeCycle) {
+  return id + '.' + lifecycle
 }
 
 export function createPageConfig (component: React.ComponentClass, pageName?: string, data?: Record<string, unknown>) {
@@ -108,9 +100,9 @@ export function createPageConfig (component: React.ComponentClass, pageName?: st
       Current.router = {
         params: options,
         path: addLeadingSlash(this.route || this.__route__),
-        onReady: getOnReadyEventKey(id),
-        onShow: getOnShowEventKey(id),
-        onHide: getOnHideEventKey(id)
+        onReady: getLifecyleEventKey(id, 'onReady'),
+        onShow: getLifecyleEventKey(id, 'onShow'),
+        onHide: getLifecyleEventKey(id, 'onHide')
       }
 
       Current.app!.mount!(component, path, () => {
@@ -128,7 +120,7 @@ export function createPageConfig (component: React.ComponentClass, pageName?: st
       const path = getPath(id, this.options)
 
       raf(() => {
-        eventCenter.trigger(getOnReadyEventKey(id))
+        eventCenter.trigger(getLifecyleEventKey(id, 'onReady'))
       })
 
       safeExecute(path, 'onReady')
@@ -149,13 +141,13 @@ export function createPageConfig (component: React.ComponentClass, pageName?: st
       Current.router = {
         params: this.options,
         path: addLeadingSlash(this.route || this.__route__),
-        onReady: getOnReadyEventKey(id),
-        onShow: getOnShowEventKey(id),
-        onHide: getOnHideEventKey(id)
+        onReady: getLifecyleEventKey(id, 'onReady'),
+        onShow: getLifecyleEventKey(id, 'onShow'),
+        onHide: getLifecyleEventKey(id, 'onHide')
       }
 
       raf(() => {
-        eventCenter.trigger(getOnShowEventKey(id))
+        eventCenter.trigger(getLifecyleEventKey(id, 'onShow'))
       })
 
       safeExecute(path, 'onShow')
@@ -166,7 +158,7 @@ export function createPageConfig (component: React.ComponentClass, pageName?: st
       const path = getPath(id, this.options)
 
       raf(() => {
-        eventCenter.trigger(getOnHideEventKey(id))
+        eventCenter.trigger(getLifecyleEventKey(id, 'onHide'))
       })
 
       safeExecute(path, 'onHide')
