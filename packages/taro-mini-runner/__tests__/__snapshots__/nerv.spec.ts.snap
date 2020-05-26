@@ -51,7 +51,9 @@ require(\\"./taro\\");
             return App;
         }(index_esm[\\"a\\"]);
         var lib_src_app = app_App;
-        var inst = App(Object(runtime_esm[\\"createReactApp\\"])(lib_src_app, index_esm[\\"b\\"], index_esm[\\"b\\"]));
+        var config = undefined;
+        runtime_esm[\\"window\\"].__taroAppConfig = config;
+        var inst = App(Object(runtime_esm[\\"createReactApp\\"])(lib_src_app, index_esm[\\"b\\"], index_esm[\\"b\\"], config));
     }
 }, [ [ 21, 0, 1, 2 ] ] ]);
 
@@ -3452,14 +3454,8 @@ require(\\"./taro\\");
                 }
                 return path;
             }
-            function getOnReadyEventKey(path) {
-                return path + \\".\\" + \\"onReady\\";
-            }
-            function getOnShowEventKey(path) {
-                return path + \\".\\" + \\"onShow\\";
-            }
-            function getOnHideEventKey(path) {
-                return path + \\".\\" + \\"onHide\\";
+            function getLifecyleEventKey(id, lifecycle) {
+                return id + \\".\\" + lifecycle;
             }
             function createPageConfig(component, pageName, data) {
                 var id = pageName !== null && pageName !== void 0 ? pageName : \\"taro_page_\\".concat(pageId());
@@ -3472,9 +3468,9 @@ require(\\"./taro\\");
                         Current.router = {
                             params: options,
                             path: addLeadingSlash(this.route || this.__route__),
-                            onReady: getOnReadyEventKey(id),
-                            onShow: getOnShowEventKey(id),
-                            onHide: getOnHideEventKey(id)
+                            onReady: getLifecyleEventKey(id, \\"onReady\\"),
+                            onShow: getLifecyleEventKey(id, \\"onShow\\"),
+                            onHide: getLifecyleEventKey(id, \\"onHide\\")
                         };
                         Current.app.mount(component, path, (function() {
                             pageElement = document$1.getElementById(path);
@@ -3489,7 +3485,7 @@ require(\\"./taro\\");
                     onReady: function onReady() {
                         var path = getPath(id, this.options);
                         raf((function() {
-                            eventCenter.trigger(getOnReadyEventKey(id));
+                            eventCenter.trigger(getLifecyleEventKey(id, \\"onReady\\"));
                         }));
                         safeExecute(path, \\"onReady\\");
                     },
@@ -3508,12 +3504,12 @@ require(\\"./taro\\");
                         Current.router = {
                             params: this.options,
                             path: addLeadingSlash(this.route || this.__route__),
-                            onReady: getOnReadyEventKey(id),
-                            onShow: getOnShowEventKey(id),
-                            onHide: getOnHideEventKey(id)
+                            onReady: getLifecyleEventKey(id, \\"onReady\\"),
+                            onShow: getLifecyleEventKey(id, \\"onShow\\"),
+                            onHide: getLifecyleEventKey(id, \\"onHide\\")
                         };
                         raf((function() {
-                            eventCenter.trigger(getOnShowEventKey(id));
+                            eventCenter.trigger(getLifecyleEventKey(id, \\"onShow\\"));
                         }));
                         safeExecute(path, \\"onShow\\");
                     },
@@ -3522,7 +3518,7 @@ require(\\"./taro\\");
                         Current.router = null;
                         var path = getPath(id, this.options);
                         raf((function() {
-                            eventCenter.trigger(getOnHideEventKey(id));
+                            eventCenter.trigger(getLifecyleEventKey(id, \\"onHide\\"));
                         }));
                         safeExecute(path, \\"onHide\\");
                     },
