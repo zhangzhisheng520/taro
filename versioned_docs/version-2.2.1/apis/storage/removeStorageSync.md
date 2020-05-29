@@ -4,7 +4,7 @@ sidebar_label: removeStorageSync
 ---
 
 从本地缓存中同步移除指定 key 。
-Taro.removeStorage 的同步版本
+Taro.removeStorageSync 的异步版本
 
 > [参考文档](https://developers.weixin.qq.com/miniprogram/dev/api/storage/wx.removeStorageSync.html)
 
